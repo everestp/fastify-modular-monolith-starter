@@ -40,7 +40,11 @@ export class NotesService {
     return note;
   }
 
-  async update(userId: string, noteId: string, input: { title?: string; content?: string }): Promise<Note> {
+  async update(
+    userId: string,
+    noteId: string,
+    input: { title?: string; content?: string },
+  ): Promise<Note> {
     const note = await this.notesRepository.findById(noteId);
     if (!note || note.userId !== userId) {
       throw new Error('Note not found or access denied.');

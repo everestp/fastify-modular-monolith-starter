@@ -2,11 +2,10 @@ import { Type, type Static } from '@sinclair/typebox';
 import { Value } from '@sinclair/typebox/value';
 
 const EnvSchema = Type.Object({
-  NODE_ENV: Type.Union([
-    Type.Literal('development'),
-    Type.Literal('test'),
-    Type.Literal('production'),
-  ], { default: 'development' }),
+  NODE_ENV: Type.Union(
+    [Type.Literal('development'), Type.Literal('test'), Type.Literal('production')],
+    { default: 'development' },
+  ),
   HOST: Type.String({ default: '0.0.0.0' }),
   PORT: Type.Number({ default: 3000, minimum: 1, maximum: 65535 }),
   LOG_LEVEL: Type.String({ default: 'info' }),
@@ -62,7 +61,8 @@ export const parseEnv = (input: NodeJS.ProcessEnv = process.env): AppEnv => {
     JWT_AUDIENCE: input.JWT_AUDIENCE ?? 'fastify-modular-monolith-starter',
     ACCESS_TOKEN_TTL: input.ACCESS_TOKEN_TTL ?? '15m',
     REFRESH_TOKEN_TTL: input.REFRESH_TOKEN_TTL ?? '7d',
-    CORS_ALLOWED_ORIGINS: input.CORS_ALLOWED_ORIGINS ?? 'http://localhost:3000,http://localhost:5173',
+    CORS_ALLOWED_ORIGINS:
+      input.CORS_ALLOWED_ORIGINS ?? 'http://localhost:3000,http://localhost:5173',
     RATE_LIMIT_MAX: toNumber(input.RATE_LIMIT_MAX, 100),
     RATE_LIMIT_WINDOW: toNumber(input.RATE_LIMIT_WINDOW, 60000),
     TRUST_PROXY:

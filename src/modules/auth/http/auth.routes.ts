@@ -1,6 +1,12 @@
 import fp from 'fastify-plugin';
 import { Type } from '@sinclair/typebox';
-import { AuthTokensSchema, LoginBodySchema, RefreshBodySchema, RegisterBodySchema, UserResponseSchema } from './auth.schemas.js';
+import {
+  AuthTokensSchema,
+  LoginBodySchema,
+  RefreshBodySchema,
+  RegisterBodySchema,
+  UserResponseSchema,
+} from './auth.schemas.js';
 
 export const authRoutes = fp(async (app) => {
   const accessTokenTtl = app.config?.ACCESS_TOKEN_TTL ?? '15m';
@@ -69,7 +75,9 @@ export const authRoutes = fp(async (app) => {
       },
     },
     async (request, reply) => {
-      const payload = await app.jwt.verify<{ sub: string; email: string }>((request.body as { refreshToken: string }).refreshToken);
+      const payload = await app.jwt.verify<{ sub: string; email: string }>(
+        (request.body as { refreshToken: string }).refreshToken,
+      );
       const result = await app.authService.refresh({
         userId: payload.sub,
         issueToken: async (userId, userEmail, type) =>

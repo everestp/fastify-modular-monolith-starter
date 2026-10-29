@@ -14,20 +14,20 @@ export const errorHandlerPlugin = fp(async (app) => {
       requestId: request.id,
     };
 
-    reply
-      .code(statusCode)
-      .type('application/problem+json')
-      .send(payload);
+    reply.code(statusCode).type('application/problem+json').send(payload);
   });
 
   app.setNotFoundHandler((request, reply) => {
-    reply.code(404).type('application/problem+json').send({
-      type: 'https://example.com/problems/not-found',
-      title: 'Not Found',
-      status: 404,
-      detail: `Route not found: ${request.method} ${request.url}`,
-      instance: request.url,
-      requestId: request.id,
-    });
+    reply
+      .code(404)
+      .type('application/problem+json')
+      .send({
+        type: 'https://example.com/problems/not-found',
+        title: 'Not Found',
+        status: 404,
+        detail: `Route not found: ${request.method} ${request.url}`,
+        instance: request.url,
+        requestId: request.id,
+      });
   });
 });

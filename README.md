@@ -14,20 +14,20 @@ An open-source, production-minded Fastify v5 + TypeScript + PostgreSQL starter. 
 
 ## 2. Tech stack
 
-| Area | Choice | Why |
-| --- | --- | --- |
-| Runtime | Node.js (latest LTS), ESM | Stable and long-supported |
-| Language | TypeScript (strict) | Safety and refactorability |
-| Framework | Fastify v5 | Fast, plugin architecture, great schema support |
-| Validation | TypeBox + Ajv | Schema is also the TS type and the OpenAPI spec |
-| Database | PostgreSQL + `pg` | Raw SQL, mature driver |
-| Migrations | `node-pg-migrate` | Plain SQL files with up and down |
-| Auth | `@fastify/jwt`, argon2id, rotating refresh tokens | Secure defaults |
-| Logging | pino (built into Fastify) | Fast JSON logs with redaction |
-| Docs | `@fastify/swagger` + Swagger UI | Generated from route schemas |
-| Tests | Vitest, `fastify.inject`, Testcontainers | Fast, real database for integration |
-| Quality | ESLint, Prettier, Husky, commitlint | Consistent contributions |
-| Releases | Changesets | Changelog and semver |
+| Area       | Choice                                            | Why                                             |
+| ---------- | ------------------------------------------------- | ----------------------------------------------- |
+| Runtime    | Node.js (latest LTS), ESM                         | Stable and long-supported                       |
+| Language   | TypeScript (strict)                               | Safety and refactorability                      |
+| Framework  | Fastify v5                                        | Fast, plugin architecture, great schema support |
+| Validation | TypeBox + Ajv                                     | Schema is also the TS type and the OpenAPI spec |
+| Database   | PostgreSQL + `pg`                                 | Raw SQL, mature driver                          |
+| Migrations | `node-pg-migrate`                                 | Plain SQL files with up and down                |
+| Auth       | `@fastify/jwt`, argon2id, rotating refresh tokens | Secure defaults                                 |
+| Logging    | pino (built into Fastify)                         | Fast JSON logs with redaction                   |
+| Docs       | `@fastify/swagger` + Swagger UI                   | Generated from route schemas                    |
+| Tests      | Vitest, `fastify.inject`, Testcontainers          | Fast, real database for integration             |
+| Quality    | ESLint, Prettier, Husky, commitlint               | Consistent contributions                        |
+| Releases   | Changesets                                        | Changelog and semver                            |
 
 ## 3. Architecture
 

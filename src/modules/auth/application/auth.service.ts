@@ -1,6 +1,9 @@
 import { randomUUID } from 'node:crypto';
 import * as argon2 from 'argon2';
-import type { InMemoryUsersRepository, UserRecord } from '../../users/infrastructure/users.repository.js';
+import type {
+  InMemoryUsersRepository,
+  UserRecord,
+} from '../../users/infrastructure/users.repository.js';
 
 export type PublicUser = Omit<UserRecord, 'passwordHash'>;
 
@@ -10,7 +13,9 @@ export class AuthService {
   async register(input: { email: string; password: string }): Promise<PublicUser> {
     const email = input.email.trim().toLowerCase();
     if (!email || !input.password || input.password.length < 8) {
-      throw new Error('Email and password are required. Password must be at least 8 characters long.');
+      throw new Error(
+        'Email and password are required. Password must be at least 8 characters long.',
+      );
     }
 
     const existing = await this.usersRepository.findByEmail(email);
