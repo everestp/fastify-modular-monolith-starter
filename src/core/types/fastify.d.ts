@@ -1,18 +1,20 @@
 import 'fastify';
 import type { AppEnv } from '../../config/env.schema.js';
 import type { AuthService } from '../../modules/auth/application/auth.service.js';
-import type { InMemoryNotesRepository } from '../../modules/notes/infrastructure/notes.repository.js';
+import type { NotesRepository } from '../../modules/notes/domain/notes.repository.js';
 import type { NotesService } from '../../modules/notes/application/notes.service.js';
-import type { InMemoryUsersRepository } from '../../modules/users/infrastructure/users.repository.js';
+import type { UsersRepository } from '../../modules/users/domain/users.repository.js';
+import type { Pool } from 'pg';
 
 declare module 'fastify' {
   interface FastifyInstance {
     authenticate: (request: FastifyRequest, reply: FastifyReply) => Promise<void>;
     config: AppEnv;
     authService: AuthService;
-    usersRepository: InMemoryUsersRepository;
+    db: Pool | null;
+    usersRepository: UsersRepository;
     notesService: NotesService;
-    notesRepository: InMemoryNotesRepository;
+    notesRepository: NotesRepository;
   }
 
   interface FastifyRequest {

@@ -1,8 +1,6 @@
 # Fastify Modular Monolith Starter
 
-An open-source, production-minded Fastify v5 + TypeScript + PostgreSQL starter. It is a modular monolith: one deployable app made of independent modules (`auth`, `users`, `notes`) with clean layers, raw SQL, API versioning, structured logging, tests, Docker, and CI.
-
-> This README describes the project produced by PROMPT_FASTIFY.md. If your generated code differs slightly, update the folder map in Section 4.
+An open-source, production-minded Fastify v5 + TypeScript + PostgreSQL starter. It is a modular monolith: one deployable app made of independent modules (`auth`, `users`, `notes`) with clean layers, raw SQL, API versioning, structured logging, migrations, and tests.
 
 ## 1. Why this starter
 
@@ -10,24 +8,23 @@ An open-source, production-minded Fastify v5 + TypeScript + PostgreSQL starter. 
 - One schema, three benefits: TypeBox gives validation, TypeScript types, and OpenAPI docs
 - Raw SQL with `pg`: no ORM magic, full control, easy to reason about
 - Modular monolith: clear boundaries now, easy to split into services later
-- Open-source ready: license, contributing guide, code of conduct, issue templates, CI, releases
+- Explicit module boundaries and repository adapters make features easier to test and evolve
 
 ## 2. Tech stack
 
-| Area       | Choice                                            | Why                                             |
-| ---------- | ------------------------------------------------- | ----------------------------------------------- |
-| Runtime    | Node.js (latest LTS), ESM                         | Stable and long-supported                       |
-| Language   | TypeScript (strict)                               | Safety and refactorability                      |
-| Framework  | Fastify v5                                        | Fast, plugin architecture, great schema support |
-| Validation | TypeBox + Ajv                                     | Schema is also the TS type and the OpenAPI spec |
-| Database   | PostgreSQL + `pg`                                 | Raw SQL, mature driver                          |
-| Migrations | `node-pg-migrate`                                 | Plain SQL files with up and down                |
-| Auth       | `@fastify/jwt`, argon2id, rotating refresh tokens | Secure defaults                                 |
-| Logging    | pino (built into Fastify)                         | Fast JSON logs with redaction                   |
-| Docs       | `@fastify/swagger` + Swagger UI                   | Generated from route schemas                    |
-| Tests      | Vitest, `fastify.inject`, Testcontainers          | Fast, real database for integration             |
-| Quality    | ESLint, Prettier, Husky, commitlint               | Consistent contributions                        |
-| Releases   | Changesets                                        | Changelog and semver                            |
+| Area       | Choice                          | Why                                              |
+| ---------- | ------------------------------- | ------------------------------------------------ |
+| Runtime    | Node.js (latest LTS), ESM       | Stable and long-supported                        |
+| Language   | TypeScript (strict)             | Safety and refactorability                       |
+| Framework  | Fastify v5                      | Fast, plugin architecture, great schema support  |
+| Validation | TypeBox + Ajv                   | Schema is also the TS type and the OpenAPI spec  |
+| Database   | PostgreSQL + `pg`               | Raw SQL, mature driver                           |
+| Migrations | `node-pg-migrate`               | Versioned TypeScript migrations with up and down |
+| Auth       | `@fastify/jwt`, argon2          | Password hashing and token-based authentication  |
+| Logging    | pino (built into Fastify)       | Fast JSON logs with redaction                    |
+| Docs       | `@fastify/swagger` + Swagger UI | Generated from route schemas                     |
+| Tests      | Vitest, `fastify.inject`        | In-process HTTP tests with injectable adapters   |
+| Quality    | ESLint, Prettier                | Consistent formatting and static checks          |
 
 ## 3. Architecture
 
@@ -44,16 +41,64 @@ flowchart LR
 
 ## 4. Quick start
 
-Prerequisites: Node.js (see `.nvmrc`), Docker, npm.
+### Project structure
+
+```text
+src/
+  app.ts                         # Creates Fastify and composes shared plugins
+  main.ts                        # Process entrypoint
+  config/                        # Environment schema and parsed configuration
+  core/
+    plugins/                     # Auth, security, request context, errors, health, docs
+    types/                       # Fastify instance/request type augmentation
+  modules/
+    auth/
+      application/auth.service.ts # Registration, login, refresh, user lookup
+      http/                       # Auth routes and TypeBox schemas
+      index.ts                    # Auth module composition
+    users/
+      domain/                     # User model and repository port
+      infrastructure/             # In-memory and PostgreSQL repository adapters
+      index.ts                    # Users module composition
+    notes/
+      application/                # Note use cases
+      domain/                     # Note model and repository port
+      http/                        # Notes routes and TypeBox schemas
+      infrastructure/              # In-memory and PostgreSQL repository adapters
+      index.ts                     # Notes module composition
+  versions/
+    v1.ts                         # Versioned module composition
+migrations/                       # Reversible database schema migrations
+scripts/                          # Migration command-line entrypoints
+tests/
+  integration/                    # HTTP flow tests using Fastify inject
+```
+
+Modules contain the layers needed for their responsibilities; they are not padded
+with empty folders. Auth owns authentication workflows and routes, users owns the
+user model and persistence contract, and notes has the complete use-case, domain,
+HTTP, and persistence layers. Application services depend on repository interfaces;
+infrastructure adapters implement those interfaces. `src/app.ts` composes shared
+infrastructure, and `src/versions/v1.ts` composes versioned feature modules.
+
+### Local setup
+
+Prerequisites: Node.js (see `.nvmrc`), Docker Compose, npm.
 
 ```bash
-git clone <your-repo-url> my-api && cd my-api
 cp .env.example .env
 npm install
+docker compose up -d db
+npm run migrate:up
 npm run dev
 ```
 
 Swagger UI: http://localhost:3000/docs
+
+The API uses PostgreSQL by default. `npm run migrate:down` rolls back the latest
+migration, and `npm run migrate:create -- add_a_table` creates a TypeScript
+migration template. `/readyz` checks database connectivity; `/healthz` reports
+that the process is running without requiring dependencies to be available.
 
 ## 5. API examples
 
@@ -81,4 +126,7 @@ curl -s localhost:3000/readyz
 
 ---
 
-This repository contains a working starter implementation with Fastify v5, TypeScript, modular feature routes, JWT auth, notes CRUD, and tests.
+This repository contains a working starter implementation with Fastify v5,
+TypeScript, PostgreSQL-backed modules, versioned migrations, JWT auth, notes
+CRUD, and tests. The HTTP tests inject in-memory repository adapters; production
+startup uses the PostgreSQL adapters and the configured `DATABASE_URL`.

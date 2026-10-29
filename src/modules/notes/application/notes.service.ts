@@ -1,9 +1,9 @@
 import { randomUUID } from 'node:crypto';
-import type { Note } from '../domain.js';
-import type { InMemoryNotesRepository } from '../infrastructure/notes.repository.js';
+import type { Note } from '../domain/note.js';
+import type { NotesRepository } from '../domain/notes.repository.js';
 
 export class NotesService {
-  constructor(private readonly notesRepository: InMemoryNotesRepository) {}
+  constructor(private readonly notesRepository: NotesRepository) {}
 
   async create(input: { userId: string; title: string; content: string }): Promise<Note> {
     const title = input.title.trim();

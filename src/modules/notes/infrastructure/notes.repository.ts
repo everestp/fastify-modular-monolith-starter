@@ -1,6 +1,7 @@
-import type { Note } from '../domain.js';
+import type { Note } from '../domain/note.js';
+import type { NotesRepository } from '../domain/notes.repository.js';
 
-export class InMemoryNotesRepository {
+export class InMemoryNotesRepository implements NotesRepository {
   private readonly notes = new Map<string, Note>();
 
   async create(note: Note): Promise<Note> {

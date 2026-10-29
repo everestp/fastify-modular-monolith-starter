@@ -1,11 +1,9 @@
-export type UserRecord = {
-  id: string;
-  email: string;
-  passwordHash: string;
-  createdAt: string;
-};
+import type { UsersRepository } from '../domain/users.repository.js';
+import type { UserRecord } from '../domain/user.js';
 
-export class InMemoryUsersRepository {
+export type { UserRecord } from '../domain/user.js';
+
+export class InMemoryUsersRepository implements UsersRepository {
   private readonly users = new Map<string, UserRecord>();
 
   async create(input: UserRecord): Promise<UserRecord> {

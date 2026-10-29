@@ -15,7 +15,7 @@ export const authPlugin = fp(async (app, opts: { config: AppEnv }) => {
     },
   });
 
-  app.decorate('authenticate', async function (request, reply) {
+  app.decorate('authenticate', async function (request) {
     await request.jwtVerify();
   });
 });

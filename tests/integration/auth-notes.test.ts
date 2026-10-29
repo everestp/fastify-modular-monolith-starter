@@ -1,11 +1,16 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { buildApp } from '../src/app.js';
+import { buildApp } from '../../src/app.js';
+import { InMemoryNotesRepository } from '../../src/modules/notes/infrastructure/notes.repository.js';
+import { InMemoryUsersRepository } from '../../src/modules/users/infrastructure/users.repository.js';
 
 describe('auth and notes flow', () => {
   let app: Awaited<ReturnType<typeof buildApp>>['app'];
 
   beforeAll(async () => {
-    ({ app } = await buildApp());
+    ({ app } = await buildApp({
+      users: new InMemoryUsersRepository(),
+      notes: new InMemoryNotesRepository(),
+    }));
   });
 
   afterAll(async () => {

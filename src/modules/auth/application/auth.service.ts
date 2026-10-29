@@ -1,14 +1,12 @@
 import { randomUUID } from 'node:crypto';
 import * as argon2 from 'argon2';
-import type {
-  InMemoryUsersRepository,
-  UserRecord,
-} from '../../users/infrastructure/users.repository.js';
+import type { UsersRepository } from '../../users/domain/users.repository.js';
+import type { UserRecord } from '../../users/domain/user.js';
 
 export type PublicUser = Omit<UserRecord, 'passwordHash'>;
 
 export class AuthService {
-  constructor(private readonly usersRepository: InMemoryUsersRepository) {}
+  constructor(private readonly usersRepository: UsersRepository) {}
 
   async register(input: { email: string; password: string }): Promise<PublicUser> {
     const email = input.email.trim().toLowerCase();
@@ -81,7 +79,10 @@ export class AuthService {
   }
 
   private toPublicUser(user: UserRecord): PublicUser {
-    const { passwordHash: _passwordHash, ...publicUser } = user;
-    return publicUser;
+    return {
+      id: user.id,
+      email: user.email,
+      createdAt: user.createdAt,
+    };
   }
 }
