@@ -45,33 +45,55 @@ flowchart LR
 
 ```text
 src/
-  app.ts                         # Creates Fastify and composes shared plugins
-  main.ts                        # Process entrypoint
-  config/                        # Environment schema and parsed configuration
+  app.ts                         # Fastify composition and repository selection
+  main.ts                        # Process entrypoint and listener startup
+  config/
+    env.schema.ts                # Environment validation and defaults
+    index.ts                     # Parsed and redacted application config
   core/
-    plugins/                     # Auth, security, request context, errors, health, docs
-    types/                       # Fastify instance/request type augmentation
+    plugins/
+      auth.ts                    # JWT registration and authentication decorator
+      error-handler.ts           # Problem response and not-found handling
+      health.ts                  # Liveness and readiness routes
+      request-context.ts         # Request-scoped context
+      security.ts                # CORS, Helmet, and rate limiting
+      swagger.ts                 # OpenAPI and Swagger UI
+    types/fastify.d.ts           # Fastify instance/request type augmentation
   modules/
     auth/
-      application/auth.service.ts # Registration, login, refresh, user lookup
-      http/                       # Auth routes and TypeBox schemas
+      application/auth.service.ts # Register, login, refresh, and user lookup
+      http/
+        auth.routes.ts            # Auth endpoints
+        auth.schemas.ts           # TypeBox request/response schemas
       index.ts                    # Auth module composition
     users/
-      domain/                     # User model and repository port
-      infrastructure/             # In-memory and PostgreSQL repository adapters
+      domain/
+        user.ts                   # User record model
+        users.repository.ts       # User persistence port
+      infrastructure/
+        users.repository.ts       # In-memory adapter
+        postgres-users.repository.ts # PostgreSQL adapter
       index.ts                    # Users module composition
     notes/
-      application/                # Note use cases
-      domain/                     # Note model and repository port
-      http/                        # Notes routes and TypeBox schemas
-      infrastructure/              # In-memory and PostgreSQL repository adapters
-      index.ts                     # Notes module composition
+      application/notes.service.ts # Note use cases
+      domain/
+        note.ts                   # Note model
+        notes.repository.ts       # Notes persistence port
+      http/
+        notes.routes.ts           # Notes endpoints
+        notes.schemas.ts          # TypeBox request/response schemas
+      infrastructure/
+        notes.repository.ts       # In-memory adapter
+        postgres-notes.repository.ts # PostgreSQL adapter
+      index.ts                    # Notes module composition
   versions/
     v1.ts                         # Versioned module composition
-migrations/                       # Reversible database schema migrations
-scripts/                          # Migration command-line entrypoints
+migrations/
+  202610290001_create_users.ts   # Users schema
+  202610290002_create_notes.ts   # Notes schema and user relationship
+scripts/migrate.ts               # Migration up/down/create commands
 tests/
-  integration/                    # HTTP flow tests using Fastify inject
+  integration/auth-notes.test.ts # HTTP flow tests using Fastify inject
 ```
 
 Modules contain the layers needed for their responsibilities; they are not padded
